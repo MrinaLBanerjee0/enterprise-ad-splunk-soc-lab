@@ -12,7 +12,7 @@ The activity involved `CORP\Mr.Banerjee`, `WIN11-01`, `WIN11-02`, and `DC01`. It
 
 The important part of the exercise was not only confirming that alerts fired. I wanted to determine what actually happened, what the alerts meant, whether the activity was malicious or benign, and what needed tuning.
 
-My final conclusion was that this was authorized controlled lab activity. No malicious compromise was confirmed. The three alerts required different analyst interpretations: DET-001 was a benign false-positive security interpretation, DET-002 correctly detected a real but authorized group change, and DET-003 correctly found the cross-host condition but the v1 logic was noisy.
+My final conclusion was that this was authorized controlled lab activity. No malicious compromise was confirmed. The three alerts required different analyst interpretations: DET-001 was a false positive caused by a benign keyword match, DET-002 correctly detected a real but authorized group change, and DET-003 correctly found the cross-host condition but the v1 logic was noisy.
 
 The investigation window covered approximately 14:00–15:20 local lab time on Sep 10.
 
@@ -86,7 +86,7 @@ DET-001 v1 fired because the Script Block contained the string `Invoke-WebReques
 
 When I reviewed the actual command, I found that `Invoke-WebRequest` was only text passed to `Write-Output`. There was no URL, no web request, and no evidence in that command of a download or remote retrieval.
 
-This was an important distinction. The alert logic matched exactly what it was configured to match, but the security meaning of the event was benign. I therefore classified DET-001 as a false-positive security interpretation caused by broad keyword matching.
+This was an important distinction. The alert logic matched exactly what it was configured to match, but the security meaning of the event was benign. I therefore classified DET-001 as a false positive caused by broad keyword matching.
 
 This finding later became the reason for tuning DET-001 into v2. The tuned rule required stronger context for download-related patterns and the original benign marker no longer matched during retesting.
 
@@ -221,7 +221,7 @@ I mapped only activity that was directly supported by the telemetry.
 | Technique | Name | Evidence |
 |---|---|---|
 | `T1059.001` | PowerShell | PowerShell Script Block Logging and controlled PowerShell execution |
-| `T1059.003` | Windows Command Shell | `cmd.exe` launched as a child of PowerShell during process-tree validation |
+| `T1059.003` | Windows Command Shell | `cmd.exe` launched as a child of PowerShell during separate controlled process-tree validation |
 | `T1098.007` | Additional Local or Domain Groups | `Mr.Banerjee` added to `SOC-Analysts` on DC01 |
 
 I did not map a download technique simply because `Invoke-WebRequest` appeared as text, and I did not claim a confirmed lateral-movement technique from cross-host authentication alone.
@@ -276,11 +276,11 @@ This wording is deliberate. The hunt can only describe what was visible in the t
 
 ## 12. True Positive / False Positive / Benign Assessment
 
-### DET-001 — False-positive security interpretation
+### DET-001 — False positive — benign keyword match
 
 The detection condition matched because `Invoke-WebRequest` appeared in the Script Block, but the command only printed the string. No actual web request was executed by that command.
 
-**Disposition:** Benign false-positive security interpretation caused by broad v1 logic.
+**Disposition:** False positive — benign keyword match caused by broad v1 logic.
 
 ### DET-002 — True positive, authorized activity
 
@@ -306,7 +306,7 @@ Recommended actions for a real case would include:
 
 - confirm whether the group-membership change was authorized
 - identify the account that performed the change and document it
-- escalate unexpected privileged-group changes according to the SOC playbook
+- escalate unexpected security-group or privileged-group changes according to the SOC playbook
 - remove unauthorized membership if the playbook and analyst authority allow it
 - if account compromise is suspected, recommend account restriction, password reset, or disablement according to escalation procedures
 - investigate the PowerShell Script Block and its parent/child processes before deciding it is malicious
@@ -323,7 +323,7 @@ The main operational lesson is that containment should follow evidence and playb
 
 The Sep 10 investigation showed how three different alerts can point to one controlled activity sequence but still require different analyst decisions.
 
-DET-001 v1 fired on a PowerShell keyword, but the underlying command only printed text. That made it a benign false-positive security interpretation and showed that the rule was too broad.
+DET-001 v1 fired on a PowerShell keyword, but the underlying command only printed text. That made it a false positive caused by a benign keyword match and showed that the rule was too broad.
 
 DET-002 correctly identified a real Active Directory group-membership change. The event itself was valid, but correlation with the actor and lab context showed that it was authorized.
 
