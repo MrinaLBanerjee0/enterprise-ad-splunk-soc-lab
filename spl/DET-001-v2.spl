@@ -1,0 +1,14 @@
+index=soc_windows source="*PowerShell*" "<EventID>4104</EventID>"
+| rex field=_raw "(?s)<Data Name='ScriptBlockText'>(?<ScriptBlockText>.*?)</Data>"
+| eval ps=lower(ScriptBlockText)
+| where
+    (like(ps,"%invoke-webrequest%") AND
+        (like(ps,"%http://%") OR like(ps,"%https://%")))
+    OR
+    (like(ps,"%downloadstring(%") AND
+        (like(ps,"%http://%") OR like(ps,"%https://%")))
+    OR like(ps,"%frombase64string(%")
+    OR like(ps,"%invoke-expression%")
+    OR match(ps,"(^|[^a-z])iex\\s*\\(")
+| table _time host ScriptBlockText
+| sort - _time

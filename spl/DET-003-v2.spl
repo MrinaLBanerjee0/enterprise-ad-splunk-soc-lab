@@ -1,0 +1,19 @@
+index=soc_windows source="WinEventLog:Security" EventCode=4624
+(host=WIN11-01 OR host=WIN11-02)
+| rex field=Message "(?s)New Logon:.*?Account Name:\s+(?<TargetUser>[^\r\n]+)"
+| rex field=Message "Logon Type:\s+(?<LogonType>\d+)"
+| eval TargetUser=trim(TargetUser)
+| where TargetUser!="SYSTEM"
+    AND TargetUser!="LOCAL SERVICE"
+    AND TargetUser!="NETWORK SERVICE"
+    AND NOT like(TargetUser,"%$")
+    AND NOT like(TargetUser,"DWM-%")
+    AND NOT like(TargetUser,"UMFD-%")
+    AND (LogonType="2" OR LogonType="10" OR LogonType="11")
+| stats dc(host) as host_count
+        values(host) as hosts
+        earliest(_time) as first_seen
+        latest(_time) as last_seen
+        by TargetUser
+| where host_count > 1 AND (last_seen-first_seen)<=900
+| convert ctime(first_seen) ctime(last_seen)

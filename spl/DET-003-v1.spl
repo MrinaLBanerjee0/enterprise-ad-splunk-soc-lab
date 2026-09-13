@@ -1,0 +1,11 @@
+index=soc_windows source="WinEventLog:Security" EventCode=4624
+(host=WIN11-01 OR host=WIN11-02)
+| where Account_Name!="SYSTEM"
+    AND NOT like(Account_Name,"%$")
+| stats dc(host) as host_count
+        values(host) as hosts
+        earliest(_time) as first_seen
+        latest(_time) as last_seen
+        by Account_Name
+| where host_count > 1
+| convert ctime(first_seen) ctime(last_seen)
