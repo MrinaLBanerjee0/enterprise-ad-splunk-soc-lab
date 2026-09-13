@@ -1,6 +1,6 @@
 # Enterprise Active Directory + Splunk SOC Lab
 
-A hands-on SOC lab built to practice Windows and Active Directory monitoring, Splunk detection engineering, alert triage, cross-host correlation, process-tree analysis, threat hunting, and detection tuning.
+A hands-on SOC lab built to practice Windows and Active Directory monitoring, Splunk alert investigation and detection validation, cross-host correlation, process-tree analysis, threat hunting, and rule tuning.
 
 The project uses a small Windows domain with two workstations, a domain controller, and a dedicated Splunk server. The main case study is a controlled Sep 10 activity sequence that generated three detections and was then investigated and tuned using the telemetry collected in the lab.
 
@@ -32,7 +32,7 @@ The Windows systems forward telemetry to Splunk with the Universal Forwarder. Th
 
 The sanitized forwarder input configuration used for the project is available in [`configs/splunk-forwarder-inputs.conf`](configs/splunk-forwarder-inputs.conf).
 
-## Detection engineering
+## Detection rules and validation
 
 | Detection | Purpose | Final state |
 |---|---|---|
@@ -43,6 +43,10 @@ The sanitized forwarder input configuration used for the project is available in
 | [DET-003 v2](detections/DET-003-Cross-Host-Authentication-v2.md) | Tuned human-user cross-host correlation | Enabled |
 
 The corresponding SPL searches are stored in [`spl/`](spl/).
+
+### SPL learning note
+
+The SPL in this repository was implemented and tested in my lab as part of guided learning. I do not present these searches as independently authored from scratch. The work demonstrated here is configuring the searches, validating them against real lab telemetry, investigating their results, identifying noise or false positives, troubleshooting field extraction, tuning the rules, and retesting the changed behavior. I am continuing to build independent SPL-writing fluency.
 
 ## Sep 10 controlled activity
 
@@ -65,7 +69,7 @@ The complete investigation is documented in [`investigations/sep10-incident-inve
 
 ### PowerShell
 
-DET-001 v1 fired because the test string contained `Invoke-WebRequest`. The command only printed text and did not execute a web request. I treated this as a benign false-positive security interpretation and used it as the reason to tune the rule.
+DET-001 v1 fired because the test string contained `Invoke-WebRequest`. The command only printed text and did not execute a web request. I treated this as a false positive caused by a benign keyword match and used it as the reason to tune the rule.
 
 DET-001 v2 was then tested in both directions: the old benign marker no longer matched, while a controlled `FromBase64String` test did match.
 
@@ -123,7 +127,7 @@ The cross-host login was not treated as proof of malicious lateral movement.
 
 This project reinforced that an alert is a starting point, not a conclusion. DET-001 showed how a keyword can match without the suspicious behavior actually happening. DET-002 showed that a technically correct alert can still be authorized activity. DET-003 showed how correlation logic can become noisy when identity fields and time windows are too broad.
 
-The v1 and v2 searches are both kept in the repository so the detection changes are visible instead of only showing the final rule.
+The v1 and v2 searches are both kept in the repository so the rule changes are visible instead of only showing the final version.
 
 The full tuning process, including the negative/positive retests and the DET-003 field-extraction debugging, is documented in [`investigations/detection-tuning-report.md`](investigations/detection-tuning-report.md).
 
@@ -132,13 +136,14 @@ The full tuning process, including the negative/positive retests and the DET-003
 - Sysmon Event ID `3` network-connect telemetry was not enabled during the Sep 10 activity. Network activity therefore could not be conclusively assessed from Sysmon for that incident window.
 - This was a controlled home-lab scenario. No malicious compromise was confirmed.
 - The DET-001 v1 and DET-002 v1 SPL files reflect the versions documented in the project conversation; the original Splunk saved-alert exports were not retained separately.
+- The SPL searches were built with guidance and are not presented as independently authored from scratch.
 - Detection logic is lab-specific and would require additional baseline and tuning before production use.
 
 ## Repository structure
 
 ```text
 spl/             Splunk detection searches
-detections/      Detection logic, validation, and tuning notes
+detections/      Detection rule logic, validation, and tuning notes
 configs/         Sanitized Splunk Universal Forwarder input configuration
 investigations/  Analyst investigation reports
 ```
