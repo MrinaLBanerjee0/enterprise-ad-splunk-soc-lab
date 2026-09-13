@@ -59,6 +59,8 @@ The sequence included:
 
 All three detections fired during the exercise. The important result was not simply that the alerts worked, but that they required different analyst conclusions.
 
+The complete investigation is documented in [`investigations/sep10-incident-investigation.md`](investigations/sep10-incident-investigation.md).
+
 ## Investigation findings
 
 ### PowerShell
@@ -133,9 +135,10 @@ The v1 and v2 searches are both kept in the repository so the detection changes 
 ## Repository structure
 
 ```text
-spl/         Splunk detection searches
-detections/  Detection logic, validation, and tuning notes
-configs/     Sanitized Splunk Universal Forwarder input configuration
+spl/             Splunk detection searches
+detections/      Detection logic, validation, and tuning notes
+configs/         Sanitized Splunk Universal Forwarder input configuration
+investigations/  Analyst investigation reports
 ```
 
-Screenshots and formal investigation reports are intentionally not included in the repository at this stage.
+Screenshots are intentionally not included in the repository at this stage.
