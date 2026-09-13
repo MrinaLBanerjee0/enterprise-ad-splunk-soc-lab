@@ -16,6 +16,10 @@ The final approach was:
 
 `v1 behavior → identify noise/false positive → change logic → retest old behavior → run positive validation → keep v1 for comparison → enable v2`
 
+### SPL learning note
+
+The SPL used in this lab was built with guidance while I was learning Splunk search syntax. I implemented the searches in Splunk, tested them against my own telemetry, investigated the results, identified false positives and noisy behavior, worked through field-extraction problems, applied the tuned versions, and retested them. I do not present the SPL as independently authored from scratch.
+
 ---
 
 ## 2. DET-001 v1 Problem
@@ -152,7 +156,7 @@ SPL: [`../spl/DET-003-v1.spl`](../spl/DET-003-v1.spl)
 
 ## 6. DET-003 v2 Changes
 
-DET-003 v2 was rewritten to correlate the actual user from the `New Logon` section of Event ID `4624` instead of depending on the broader `Account_Name` field.
+DET-003 v2 was updated to correlate the actual user from the `New Logon` section of Event ID `4624` instead of depending on the broader `Account_Name` field.
 
 The corrected search extracts:
 
@@ -309,7 +313,7 @@ My final workflow from this project was:
 7. compare v1 and v2 behavior
 8. keep the final alert understandable enough for another analyst to investigate
 
-This made the detection-engineering work part of the investigation process instead of treating alert creation and incident analysis as separate exercises.
+This made rule validation and tuning part of the investigation process instead of treating alert creation and incident analysis as separate exercises.
 
 ## Related files
 
