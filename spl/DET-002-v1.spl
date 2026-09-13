@@ -1,0 +1,4 @@
+index=soc_windows host=DC01 source="WinEventLog:Security"
+(EventCode=4728 OR EventCode=4729 OR EventCode=4732 OR EventCode=4733 OR EventCode=4756 OR EventCode=4757)
+| table _time host EventCode Account_Name Group_Name Message
+| sort - _time
