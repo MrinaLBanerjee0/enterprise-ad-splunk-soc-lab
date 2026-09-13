@@ -1,0 +1,12 @@
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak
+
+# Local secrets / certificates
+.env
+*.key
+*.pem
+*.pfx
+*.p12
