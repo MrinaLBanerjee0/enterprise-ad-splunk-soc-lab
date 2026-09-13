@@ -125,6 +125,8 @@ This project reinforced that an alert is a starting point, not a conclusion. DET
 
 The v1 and v2 searches are both kept in the repository so the detection changes are visible instead of only showing the final rule.
 
+The full tuning process, including the negative/positive retests and the DET-003 field-extraction debugging, is documented in [`investigations/detection-tuning-report.md`](investigations/detection-tuning-report.md).
+
 ## Known limitations
 
 - Sysmon Event ID `3` network-connect telemetry was not enabled during the Sep 10 activity. Network activity therefore could not be conclusively assessed from Sysmon for that incident window.
