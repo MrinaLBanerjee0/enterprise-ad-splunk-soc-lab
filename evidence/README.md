@@ -6,6 +6,7 @@ This folder contains selected screenshots captured from the Project 2 lab. Each 
 
 | Evidence | What it supports | Boundary |
 |---|---|---|
+| [`architecture/enterprise-ad-splunk-soc-lab-overview.svg`](architecture/enterprise-ad-splunk-soc-lab-overview.svg) | Evidence-backed visual summary of the lab architecture, telemetry flow, Sep 10 controlled incident timeline, separate process/hash validation, and final detection states | This is a summary graphic assembled from the documented project evidence; the underlying screenshots and investigation files remain the primary proof |
 | [`architecture/lab-vm-inventory.png`](architecture/lab-vm-inventory.png) | VirtualBox lab contains `DC01`, the Splunk VM, `WIN11-01`, and `WIN11-02` | VM presence does not by itself prove service health or network connectivity |
 | [`architecture/splunk-host-ingestion.png`](architecture/splunk-host-ingestion.png) | `soc_windows` contains events from `DC01`, `WIN11-01`, and `WIN11-02` | Host counts are evidence of ingestion, not complete telemetry coverage |
 
