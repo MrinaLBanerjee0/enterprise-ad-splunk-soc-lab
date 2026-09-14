@@ -4,6 +4,10 @@ A hands-on SOC lab built to practice Windows and Active Directory monitoring, Sp
 
 The project uses a small Windows domain with two workstations, a domain controller, and a dedicated Splunk server. The main case study is a controlled Sep 10 activity sequence that generated three detections and was then investigated and tuned using the telemetry collected in the lab.
 
+## Project overview
+
+![Verified Enterprise AD + Splunk SOC Lab overview](evidence/architecture/enterprise-ad-splunk-soc-lab-overview.svg)
+
 ## Lab architecture
 
 | System | Role | IP |
