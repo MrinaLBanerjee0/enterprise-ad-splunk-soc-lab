@@ -23,6 +23,12 @@ During the Sep 10 controlled activity:
 
 The detection correctly surfaced real group-membership changes. The activity was authorized lab activity, so the detection was a true positive for the condition but did not represent malicious compromise.
 
+### Validation evidence
+- [AD group addition — Event ID 4728](../evidence/incident/ad-group-add-4728.png)
+- [AD group-membership threat hunt](../evidence/threat-hunt/ad-group-membership-hunt.png)
+- [Sep 10 incident investigation](../investigations/sep10-incident-investigation.md#6-active-directory-group-membership-analysis)
+- [Visual evidence gallery](../evidence/README.md#active-directory-group-addition--event-id-4728)
+
 ## Limitations
 - A group change by itself does not show whether the action was authorized or malicious.
 - Analyst context is required to evaluate the actor, target user, group, timing, and surrounding authentication activity.

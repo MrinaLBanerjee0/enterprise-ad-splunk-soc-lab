@@ -22,6 +22,11 @@ Write-Output "LAB-INC-SEP10 Invoke-WebRequest"
 
 The command only printed a string. It did not perform an actual web request. This demonstrated that keyword-only matching could produce a benign false-positive security interpretation.
 
+### Validation evidence
+- [PowerShell Event ID 4104 screenshot](../evidence/incident/powershell-4104-marker.png)
+- [Sep 10 incident investigation](../investigations/sep10-incident-investigation.md#4-powershell-analysis)
+- [Visual evidence gallery](../evidence/README.md#powershell-event-id-4104)
+
 ## Limitations
 - Broad keyword matching can trigger on harmless strings or demonstrations.
 - A match does not prove network activity, payload download, or compromise.

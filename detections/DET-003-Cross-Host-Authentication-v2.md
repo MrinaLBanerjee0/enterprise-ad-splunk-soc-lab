@@ -29,6 +29,14 @@ Historical validation against the Sep 10 lab window identified `Mr.Banerjee` on 
 
 The events were within the 15-minute correlation window. DC01 Kerberos events `4768` and `4769` were also used during the investigation to corroborate authentication from the two workstation IP addresses.
 
+### Validation evidence
+- [DET-003 v2 historical validation](../evidence/tuning/det003-v2-validation.png)
+- [Cross-host authentication screenshot](../evidence/incident/cross-host-authentication.png)
+- [Kerberos correlation screenshot](../evidence/incident/kerberos-correlation.png)
+- [Final saved-alert state](../evidence/tuning/final-alert-state.png)
+- [Detection tuning report](../investigations/detection-tuning-report.md#7-det-003-retest)
+- [Visual evidence gallery](../evidence/README.md#det-003-v2--historical-validation)
+
 ## Alert tuning
 The v2 alert was scheduled every 5 minutes over a 15-minute lookback and duplicate suppression/throttling was added to reduce repeated alerts for the same condition.
 

@@ -8,6 +8,8 @@ The project uses a small Windows domain with two workstations, a domain controll
 
 ![Verified Enterprise AD + Splunk SOC Lab overview](evidence/architecture/enterprise-ad-splunk-soc-lab-overview.svg)
 
+**Quick review:** [Incident Investigation](investigations/sep10-incident-investigation.md) · [Detection Tuning Report](investigations/detection-tuning-report.md) · [Visual Evidence Gallery](evidence/README.md) · [SPL Searches & Provenance](spl/README.md)
+
 ## Lab architecture
 
 | System | Role | IP |

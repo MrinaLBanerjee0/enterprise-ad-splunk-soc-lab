@@ -17,6 +17,12 @@ SPL: [`../spl/DET-003-v1.spl`](../spl/DET-003-v1.spl)
 ## Validation
 The Sep 10 controlled activity produced the expected cross-host condition for `Mr.Banerjee` on `WIN11-01` and `WIN11-02`.
 
+### Validation evidence
+- [Cross-host authentication screenshot](../evidence/incident/cross-host-authentication.png)
+- [Kerberos correlation screenshot](../evidence/incident/kerberos-correlation.png)
+- [Sep 10 incident investigation](../investigations/sep10-incident-investigation.md#7-cross-host-authentication-and-kerberos-correlation)
+- [Visual evidence gallery](../evidence/README.md#cross-host-authentication)
+
 ## Problems found
 - `Account_Name` was too broad for reliable human-user correlation in the raw Windows event structure.
 - Service and desktop-session identities created unnecessary noise.
