@@ -1,16 +1,12 @@
 # Evidence Gallery
 
-This page is designed so a reviewer can inspect the main project proof without hunting through folders. Each image is shown inline, followed by what it supports and the boundary of that evidence.
-
-> The screenshots are the primary visual proof. The written investigation and tuning reports explain how the evidence was interpreted.
+I kept the main screenshots on one page so a reviewer can see the proof without digging through folders. The reports explain the investigation in more detail; this page is mainly for quick visual checking.
 
 ## Project overview
 
 ![Verified Enterprise AD + Splunk SOC Lab overview](architecture/enterprise-ad-splunk-soc-lab-overview.svg)
 
-**Supports:** evidence-backed visual summary of the lab architecture, telemetry flow, Sep 10 controlled incident timeline, separate process/hash validation, and final detection states.
-
-**Boundary:** this is a summary graphic assembled from documented project evidence; the underlying screenshots and reports remain the primary proof.
+This diagram summarizes the lab architecture, telemetry flow, Sep 10 timeline, separate process/hash validation, and final detection states. It is a summary built from the project records below, not a replacement for the original screenshots.
 
 ## Architecture and ingestion
 
@@ -18,17 +14,13 @@ This page is designed so a reviewer can inspect the main project proof without h
 
 ![VirtualBox lab inventory](architecture/lab-vm-inventory.png)
 
-**Supports:** the lab contains `DC01`, the Splunk VM, `WIN11-01`, and `WIN11-02`.
-
-**Boundary:** VM presence alone does not prove service health or network connectivity.
+This shows the four lab systems: `DC01`, the Splunk VM, `WIN11-01`, and `WIN11-02`. It confirms the VMs existed, but by itself it does not prove that every service was healthy or that connectivity was working at that exact moment.
 
 ### Splunk host ingestion
 
 ![Splunk host ingestion](architecture/splunk-host-ingestion.png)
 
-**Supports:** `soc_windows` contains events from `DC01`, `WIN11-01`, and `WIN11-02`.
-
-**Boundary:** host counts prove ingestion was occurring, not complete telemetry coverage.
+This shows events from `DC01`, `WIN11-01`, and `WIN11-02` in `soc_windows`. I use it as proof that Splunk was receiving data from those hosts, not as proof that every possible log source was being collected.
 
 ## Sep 10 incident evidence
 
@@ -36,33 +28,25 @@ This page is designed so a reviewer can inspect the main project proof without h
 
 ![PowerShell 4104 marker](incident/powershell-4104-marker.png)
 
-**Supports:** `WIN11-01` recorded the controlled Script Block `Write-Output "LAB-INC-SEP10 Invoke-WebRequest"` at the documented Sep 10 time.
-
-**Boundary:** the event proves the string was logged; it does not show that an actual web request occurred.
+`WIN11-01` logged the controlled Script Block `Write-Output "LAB-INC-SEP10 Invoke-WebRequest"` at the documented Sep 10 time. The screenshot proves the text was logged; the command only printed the string and did not perform a web request.
 
 ### Active Directory group addition — Event ID 4728
 
 ![AD group addition 4728](incident/ad-group-add-4728.png)
 
-**Supports:** `Administrator` added `Mr.Banerjee` to `SOC-Analysts`.
-
-**Boundary:** the event proves the group change, not malicious intent.
+This is the `4728` event where `Administrator` added `Mr.Banerjee` to `SOC-Analysts`. The event confirms the change happened. Whether the action was malicious or authorized had to be decided from the investigation context.
 
 ### Cross-host authentication
 
 ![Cross-host authentication](incident/cross-host-authentication.png)
 
-**Supports:** `Mr.Banerjee` had successful `4624` logons on both `WIN11-01` and `WIN11-02`.
-
-**Boundary:** cross-host authentication does not by itself prove lateral movement or compromise.
+This shows successful `4624` logons for `Mr.Banerjee` on both `WIN11-01` and `WIN11-02`. That was enough to satisfy the cross-host condition, but not enough to call it lateral movement or account compromise.
 
 ### Kerberos correlation
 
 ![Kerberos correlation](incident/kerberos-correlation.png)
 
-**Supports:** `DC01` recorded `4768`/`4769` activity associated with `10.10.10.101` and `10.10.10.102`.
-
-**Boundary:** Kerberos activity corroborates authentication context; it does not establish malicious intent.
+`DC01` recorded `4768`/`4769` activity associated with `10.10.10.101` and `10.10.10.102`. I used these events to support the workstation authentication timeline; they do not make the activity malicious by themselves.
 
 ## Separate process and hash validation
 
@@ -70,17 +54,13 @@ This page is designed so a reviewer can inspect the main project proof without h
 
 ![Sysmon cmd hash](incident/cmd-hash-splunk.png)
 
-**Supports:** Sysmon telemetry recorded the SHA-256 associated with `C:\Windows\System32\cmd.exe` during the separate process-tree validation.
-
-**Boundary:** the hash identifies the observed binary; it does not determine whether the surrounding activity was benign.
+During a later controlled process-tree test, Sysmon recorded the SHA-256 for `C:\Windows\System32\cmd.exe`. This was useful for practicing process and hash analysis, but the hash alone cannot tell whether the surrounding activity was safe.
 
 ### VirusTotal enrichment
 
 ![VirusTotal hash enrichment](incident/cmd-hash-enrichment.png)
 
-**Supports:** VirusTotal showed `0/71` security vendors flagging the hash at the time of lookup.
-
-**Boundary:** reputation is point-in-time external enrichment and does not prove that the activity was safe.
+At the time I checked it, VirusTotal showed `0/71` security vendors flagging the hash. I treated that as one piece of enrichment only; a clean reputation result does not prove that activity using the binary was benign.
 
 ## Threat-hunt evidence
 
@@ -88,17 +68,13 @@ This page is designed so a reviewer can inspect the main project proof without h
 
 ![Threat hunt PowerShell to cmd](threat-hunt/threat-hunt-powershell-cmd.png)
 
-**Supports:** the investigated Sysmon window produced one PowerShell-to-`cmd.exe` process-chain match on `WIN11-01` for `CORP\Mr.Banerjee`.
-
-**Boundary:** the result only describes telemetry available in the searched window.
+The Sysmon hunt returned one relevant PowerShell-to-`cmd.exe` process-chain match on `WIN11-01` for `CORP\Mr.Banerjee`. That result only describes the time range and telemetry I actually searched.
 
 ### AD group-membership hunt
 
 ![AD group membership hunt](threat-hunt/ad-group-membership-hunt.png)
 
-**Supports:** group-membership activity in the investigated window was reviewed for the known add/remove events.
-
-**Boundary:** the hunt does not prove no uncollected or out-of-window group changes occurred.
+I reviewed the group-membership events in the investigated window and found the known add/remove activity. This does not rule out changes outside the search window or anything that was not collected.
 
 ## Detection tuning and validation evidence
 
@@ -106,38 +82,38 @@ This page is designed so a reviewer can inspect the main project proof without h
 
 ![DET-001 v2 negative retest](tuning/det001-v2-negative-retest.png)
 
-**Supports:** DET-001 v2 returned `0` results over the window containing the original benign marker.
-
-**Boundary:** a zero result is specific to the tested query and time range.
+When I reran DET-001 v2 over the window containing the original benign marker, it returned `0` results. That is the expected result for this specific retest, not a claim that the rule has no false negatives in general.
 
 ### DET-001 v2 — positive validation
 
 ![DET-001 v2 positive validation](tuning/det001-v2-positive-validation.png)
 
-**Supports:** DET-001 v2 returned a controlled `FromBase64String("QQ==")` match.
-
-**Boundary:** the test validates one retained pattern; it does not prove complete PowerShell detection coverage.
+The controlled `FromBase64String("QQ==")` test still matched DET-001 v2. I used this to check that the tuning removed the known benign case without removing every retained suspicious pattern.
 
 ### DET-003 v2 — historical validation
 
 ![DET-003 v2 validation](tuning/det003-v2-validation.png)
 
-**Supports:** DET-003 v2 correlated `Mr.Banerjee` across `WIN11-01` and `WIN11-02` within the 15-minute condition.
-
-**Boundary:** the result proves the correlation condition, not malicious lateral movement.
+DET-003 v2 correlated `Mr.Banerjee` across `WIN11-01` and `WIN11-02` inside the 15-minute condition. This validates the correlation logic; it still does not prove malicious lateral movement.
 
 ### Final saved-alert state
 
 ![Final alert state](tuning/final-alert-state.png)
 
-**Supports:** DET-001 v1 disabled, DET-001 v2 enabled, DET-002 v1 enabled, DET-003 v1 disabled, and DET-003 v2 enabled.
+The final state shown here is:
 
-**Boundary:** the final configuration does not preserve the expired Sep 10 Triggered Alerts UI history.
+- DET-001 v1 — disabled
+- DET-001 v2 — enabled
+- DET-002 v1 — enabled
+- DET-003 v1 — disabled
+- DET-003 v2 — enabled
+
+This screenshot shows the final configuration, not the original Sep 10 Triggered Alerts history.
 
 ## Retention limitation
 
-Splunk Triggered Alerts entries were retained for only 24 hours in this lab. The Sep 10 Triggered Alerts UI history was therefore no longer available when the final evidence set was collected. The repository instead preserves the underlying telemetry, historical validation searches, tuning results, and final alert configuration.
+In this lab, Splunk kept Triggered Alerts entries for only 24 hours. By the time I collected the final evidence set, the Sep 10 alert-list history had expired. I therefore kept the underlying events, later validation results, tuning evidence, and final saved-alert state instead.
 
-This is an evidence limitation, not something the project attempts to hide. Any future alert screenshots should be labeled as later validation/retesting rather than historical Sep 10 alert proof.
+If I run another validation later, I will label those screenshots as a later retest rather than presenting them as historical Sep 10 alert proof.
 
 [Return to project README](../README.md) · [Read the Sep 10 investigation](../investigations/sep10-incident-investigation.md) · [Read the tuning report](../investigations/detection-tuning-report.md)
