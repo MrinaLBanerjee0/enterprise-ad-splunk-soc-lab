@@ -26,6 +26,12 @@ Two controlled tests were used:
 
 This showed that the rule could reject the known benign keyword-only event while still detecting a stronger suspicious pattern.
 
+### Validation evidence
+- [Negative retest — original benign marker excluded](../evidence/tuning/det001-v2-negative-retest.png)
+- [Positive validation — FromBase64String match](../evidence/tuning/det001-v2-positive-validation.png)
+- [Detection tuning report](../investigations/detection-tuning-report.md#4-det-001-retest)
+- [Visual evidence gallery](../evidence/README.md#detection-tuning-and-validation-evidence)
+
 ## Limitations
 - This is heuristic detection logic, not exhaustive PowerShell coverage.
 - Obfuscated or alternative PowerShell techniques may not match.
