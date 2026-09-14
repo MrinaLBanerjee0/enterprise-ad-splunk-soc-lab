@@ -20,6 +20,20 @@ The final approach was:
 
 The SPL used in this lab was built with guidance while I was learning Splunk search syntax. I implemented the searches in Splunk, tested them against my own telemetry, investigated the results, identified false positives and noisy behavior, worked through field-extraction problems, applied the tuned versions, and retested them. I do not present the SPL as independently authored from scratch.
 
+## Visual validation evidence
+
+The screenshots below are embedded in the report so the tuning claims can be reviewed without hunting through the repository. The [full evidence gallery](../evidence/README.md) documents the boundary of each image.
+
+| DET-001 v2 negative retest | DET-001 v2 positive validation |
+|---|---|
+| ![DET-001 v2 negative retest](../evidence/tuning/det001-v2-negative-retest.png) | ![DET-001 v2 positive validation](../evidence/tuning/det001-v2-positive-validation.png) |
+| Original benign marker returned `0` results. | Controlled `FromBase64String("QQ==")` test matched. |
+
+| DET-003 v2 historical validation | Final saved-alert state |
+|---|---|
+| ![DET-003 v2 validation](../evidence/tuning/det003-v2-validation.png) | ![Final alert state](../evidence/tuning/final-alert-state.png) |
+| `Mr.Banerjee` correlated across both workstations inside the 15-minute condition. | Final enabled/disabled state for DET-001, DET-002 and DET-003. |
+
 ---
 
 ## 2. DET-001 v1 Problem
@@ -323,3 +337,4 @@ This made rule validation and tuning part of the investigation process instead o
 - [`DET-003 v1 SPL`](../spl/DET-003-v1.spl)
 - [`DET-003 v2 SPL`](../spl/DET-003-v2.spl)
 - [`Sep 10 Incident Investigation`](sep10-incident-investigation.md)
+- [`Visual Evidence Gallery`](../evidence/README.md)
