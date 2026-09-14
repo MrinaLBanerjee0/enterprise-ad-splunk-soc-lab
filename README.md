@@ -113,6 +113,22 @@ After reviewing the alerts, I searched the collected telemetry for similar activ
 
 No additional matching suspicious activity was identified in the collected telemetry during the investigated time window.
 
+## Evidence
+
+Selected screenshots and validation evidence are included in [`evidence/`](evidence/). The [`evidence/README.md`](evidence/README.md) index maps each image to the claim it supports and states the main evidence boundary.
+
+The evidence set covers:
+
+- VirtualBox lab inventory and Splunk host ingestion
+- the Sep 10 PowerShell `4104` marker
+- AD group-membership change evidence
+- cross-host `4624` authentication and Kerberos correlation
+- Sysmon process/hash evidence and external hash enrichment
+- independent PowerShell-to-`cmd.exe` and group-membership hunts
+- DET-001 v2 negative and positive validation
+- DET-003 v2 historical validation
+- final enabled/disabled alert state
+
 ## MITRE ATT&CK mapping
 
 Only techniques directly supported by the observed lab activity are included:
@@ -135,6 +151,7 @@ The full tuning process, including the negative/positive retests and the DET-003
 
 - Sysmon Event ID `3` network-connect telemetry was not enabled during the Sep 10 activity. Network activity therefore could not be conclusively assessed from Sysmon for that incident window.
 - This was a controlled home-lab scenario. No malicious compromise was confirmed.
+- In this lab, Splunk Triggered Alerts entries were retained for only 24 hours. The Sep 10 Triggered Alerts UI entries were no longer available when the final evidence set was collected, so the repository preserves the underlying events, validation results, and final alert configuration instead.
 - The DET-001 v1 and DET-002 v1 SPL files reflect the versions documented in the project conversation; the original Splunk saved-alert exports were not retained separately.
 - The SPL searches were built with guidance and are not presented as independently authored from scratch.
 - Detection logic is lab-specific and would require additional baseline and tuning before production use.
@@ -146,6 +163,5 @@ spl/             Splunk detection searches
 detections/      Detection rule logic, validation, and tuning notes
 configs/         Sanitized Splunk Universal Forwarder input configuration
 investigations/  Analyst investigation reports
+evidence/        Selected screenshots supporting architecture, incident, hunting, and tuning claims
 ```
-
-Screenshots are intentionally not included in the repository at this stage.
