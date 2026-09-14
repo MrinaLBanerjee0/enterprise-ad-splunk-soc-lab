@@ -1,16 +1,16 @@
 # Enterprise Active Directory + Splunk SOC Lab
 
-A hands-on SOC lab built to practice Windows and Active Directory monitoring, Splunk alert investigation and detection validation, cross-host correlation, process-tree analysis, threat hunting, and rule tuning.
+I built this lab to get more practice with Windows, Active Directory, Splunk, and the kind of investigation work I would expect in a SOC role.
 
-The project uses a small Windows domain with two workstations, a domain controller, and a dedicated Splunk server. The main case study is a controlled Sep 10 activity sequence that generated three detections and was then investigated and tuned using the telemetry collected in the lab.
+The environment has one domain controller, two Windows 11 workstations, and a separate Splunk server. I used it to collect Windows telemetry, create and test detections, investigate a controlled activity sequence, tune noisy logic, and run a follow-up threat hunt.
 
 ## Project overview
 
 ![Verified Enterprise AD + Splunk SOC Lab overview](evidence/architecture/enterprise-ad-splunk-soc-lab-overview.svg)
 
-**Quick review:** [Incident Investigation](investigations/sep10-incident-investigation.md) · [Detection Tuning Report](investigations/detection-tuning-report.md) · [Visual Evidence Gallery](evidence/README.md) · [SPL Searches & Provenance](spl/README.md)
+**Quick links:** [Incident Investigation](investigations/sep10-incident-investigation.md) · [Detection Tuning Report](investigations/detection-tuning-report.md) · [Evidence Gallery](evidence/README.md) · [SPL Searches](spl/README.md)
 
-## Lab architecture
+## Lab setup
 
 | System | Role | IP |
 |---|---|---|
@@ -21,77 +21,89 @@ The project uses a small Windows domain with two workstations, a domain controll
 
 - Domain: `corp.soclab.test`
 - NetBIOS: `CORP`
-- Internal VirtualBox network: `SOCLAB`
+- VirtualBox internal network: `SOCLAB`
 - Splunk index: `soc_windows`
 - Splunk receiving port: `9997`
 
-## Telemetry collected
+## What I collected
 
-The Windows systems forward telemetry to Splunk with the Universal Forwarder. The lab collected:
+The Windows hosts forward logs to Splunk through the Universal Forwarder. The project includes:
 
 - Windows Application, Security, and System logs
 - PowerShell Operational logs with Script Block Logging (`4104`)
 - Sysmon Operational logs, including process creation (`Event ID 1`)
-- Successful authentication events (`4624`)
-- Active Directory group-membership events (`4728`, `4729`)
-- Kerberos authentication events (`4768`, `4769`)
+- successful logons (`4624`)
+- AD group-membership events (`4728`, `4729`)
+- Kerberos events (`4768`, `4769`)
 
-The sanitized forwarder input configuration used for the project is available in [`configs/splunk-forwarder-inputs.conf`](configs/splunk-forwarder-inputs.conf).
+The forwarder input configuration is kept in [`configs/splunk-forwarder-inputs.conf`](configs/splunk-forwarder-inputs.conf).
 
-## Detection rules and validation
+## Detections
 
-| Detection | Purpose | Final state |
+| Detection | What it looks for | Final state |
 |---|---|---|
 | [DET-001 v1](detections/DET-001-Suspicious-PowerShell-v1.md) | Broad suspicious PowerShell keyword matching | Disabled |
-| [DET-001 v2](detections/DET-001-Suspicious-PowerShell-v2.md) | Tuned suspicious PowerShell detection | Enabled |
+| [DET-001 v2](detections/DET-001-Suspicious-PowerShell-v2.md) | Tuned suspicious PowerShell activity | Enabled |
 | [DET-002 v1](detections/DET-002-AD-Group-Membership-v1.md) | AD security-group membership changes | Enabled |
-| [DET-003 v1](detections/DET-003-Cross-Host-Authentication-v1.md) | Broad cross-host authentication correlation | Disabled |
+| [DET-003 v1](detections/DET-003-Cross-Host-Authentication-v1.md) | Broad same-user cross-host authentication | Disabled |
 | [DET-003 v2](detections/DET-003-Cross-Host-Authentication-v2.md) | Tuned human-user cross-host correlation | Enabled |
 
-The corresponding SPL searches are stored in [`spl/`](spl/).
+The SPL files are in [`spl/`](spl/).
 
-### SPL learning note
+### SPL note
 
-The SPL in this repository was implemented and tested in my lab as part of guided learning. I do not present these searches as independently authored from scratch. The work demonstrated here is configuring the searches, validating them against real lab telemetry, investigating their results, identifying noise or false positives, troubleshooting field extraction, tuning the rules, and retesting the changed behavior. I am continuing to build independent SPL-writing fluency.
+I built and tested the SPL with guidance while learning Splunk search syntax. I implemented the searches in my own lab, tested them against my telemetry, debugged extraction problems, tuned the noisy rules, and retested the final versions. I do not claim that I wrote every query independently from scratch.
 
 ## Sep 10 controlled activity
 
-The main investigation scenario was intentionally generated inside the lab so I could follow the alert-to-investigation workflow instead of only testing searches in isolation.
+I created one controlled sequence so I could work through several alerts as one investigation instead of testing each rule in isolation.
 
-The sequence included:
+The sequence was:
 
 1. `CORP\Mr.Banerjee` authenticated on `WIN11-01`.
-2. PowerShell Event ID `4104` recorded the controlled marker `Write-Output "LAB-INC-SEP10 Invoke-WebRequest"`.
-3. `Administrator` added `Mr.Banerjee` to the `SOC-Analysts` group on `DC01`.
+2. PowerShell Event ID `4104` recorded `Write-Output "LAB-INC-SEP10 Invoke-WebRequest"`.
+3. `Administrator` added `Mr.Banerjee` to `SOC-Analysts` on `DC01`.
 4. `Mr.Banerjee` authenticated on `WIN11-02`.
-5. DC01 Kerberos `4768`/`4769` events corroborated authentication activity from the two workstation IP addresses.
-6. The group membership was later removed as cleanup.
+5. `DC01` recorded Kerberos `4768`/`4769` activity associated with the two workstation IPs.
+6. The group membership was removed later during cleanup.
 
-All three detections fired during the exercise. The important result was not simply that the alerts worked, but that they required different analyst conclusions.
+The three detections all matched something in the exercise, but they did not all mean the same thing. That became the main point of the investigation.
 
-The complete investigation is documented in [`investigations/sep10-incident-investigation.md`](investigations/sep10-incident-investigation.md).
+The full timeline and reasoning are in [`investigations/sep10-incident-investigation.md`](investigations/sep10-incident-investigation.md).
 
-## Investigation findings
+## What I found
 
-### PowerShell
+### DET-001 — PowerShell false positive
 
-DET-001 v1 fired because the test string contained `Invoke-WebRequest`. The command only printed text and did not execute a web request. I treated this as a false positive caused by a benign keyword match and used it as the reason to tune the rule.
+DET-001 v1 fired because the Script Block contained the text `Invoke-WebRequest`.
 
-DET-001 v2 was then tested in both directions: the old benign marker no longer matched, while a controlled `FromBase64String` test did match.
+The actual command was:
 
-### Active Directory group change
+```powershell
+Write-Output "LAB-INC-SEP10 Invoke-WebRequest"
+```
 
-DET-002 correctly detected the real addition and removal of `Mr.Banerjee` from `SOC-Analysts`. The security event was real, but the action was authorized lab activity. This was a useful example of a true detection condition that still required business/context validation before calling it malicious.
+It only printed the text. It did not make a web request. I treated this as a false positive caused by broad keyword matching.
 
-### Cross-host authentication
+I then changed the v2 logic so `Invoke-WebRequest` and `DownloadString(` require URL context, while stronger patterns such as `FromBase64String(` and `Invoke-Expression` are still kept. The old benign marker returned `0` results with v2, and a controlled `FromBase64String("QQ==")` test still matched.
 
-DET-003 v1 detected `Mr.Banerjee` on both workstations, but the initial rule was too broad and produced noise from account-field handling and overlapping alert windows.
+### DET-002 — correct detection, authorized activity
 
-DET-003 v2 extracts the actual new-logon user, filters service and machine identities, keeps relevant interactive-style logon types, and requires the same user to appear on both workstations within 15 minutes. Duplicate suppression/throttling was also added.
+DET-002 detected the real addition and removal of `Mr.Banerjee` from `SOC-Analysts`.
 
-## Process-tree analysis
+The detection itself was correct. The investigation showed that the change was authorized lab activity. I left DET-002 at v1 because I did not find a detection-logic problem that justified creating a v2 just for the sake of having one.
 
-During controlled validation on `WIN11-01`, Sysmon process telemetry showed the relationship:
+### DET-003 — useful condition, noisy v1
+
+DET-003 v1 found the same user on both Windows workstations, but it was too broad. Service/machine accounts, the account field, logon types, and overlapping alert windows all contributed noise.
+
+The v2 search extracts the actual `New Logon` user, filters common service and machine identities, keeps logon types `2`, `10`, and `11`, and requires the same user to appear on both workstations within `900` seconds.
+
+I still do not treat a cross-host match as proof of lateral movement. It is an alert condition that needs context.
+
+## Process-tree practice
+
+The original 14:12 PowerShell event did not create the process tree below. I generated a separate controlled test later so I could practice Sysmon process correlation.
 
 ```text
 CORP\Mr.Banerjee
@@ -100,74 +112,66 @@ CORP\Mr.Banerjee
         └── conhost.exe
 ```
 
-This was used to practice parent/child process analysis rather than judging a process only by its filename. The observed `cmd.exe` SHA-256 was:
+The observed `cmd.exe` SHA-256 was:
 
 ```text
 8DD1EBB0B969370C70A5EE7F7EE347949AA7046AA5E1A33FCD7B1E9415B21FC3
 ```
 
-The executable was consistent with legitimate Windows `cmd.exe`, but the investigation did not treat a legitimate hash as proof that the surrounding activity was benign.
+VirusTotal showed `0/71` vendors flagging the hash at the time I checked it. I used that as enrichment only. A legitimate binary can still be used in malicious activity, so the reputation result was not enough to decide the case by itself.
 
-## Independent threat hunt
+## Threat hunt
 
-After reviewing the alerts, I searched the collected telemetry for similar activity outside the original alert results, including:
+After the initial alert investigation, I searched the collected telemetry for related activity instead of stopping with the three alerts.
+
+I checked for:
 
 - similar PowerShell activity on other hosts
 - additional PowerShell-to-`cmd.exe` process chains
-- other unexplained security-group changes
-- other human users showing the same cross-host authentication pattern
+- other unexplained group-membership changes
+- other human users matching the same cross-host condition
 
-No additional matching suspicious activity was identified in the collected telemetry during the investigated time window.
-
-## Evidence
-
-Selected screenshots and validation evidence are included in [`evidence/`](evidence/). The [`evidence/README.md`](evidence/README.md) index maps each image to the claim it supports and states the main evidence boundary.
-
-The evidence set covers:
-
-- VirtualBox lab inventory and Splunk host ingestion
-- the Sep 10 PowerShell `4104` marker
-- AD group-membership change evidence
-- cross-host `4624` authentication and Kerberos correlation
-- Sysmon process/hash evidence and external hash enrichment
-- independent PowerShell-to-`cmd.exe` and group-membership hunts
-- DET-001 v2 negative and positive validation
-- DET-003 v2 historical validation
-- final enabled/disabled alert state
+I did not find additional matching suspicious activity in the telemetry and time window I searched. That conclusion only applies to the data I actually collected.
 
 ## MITRE ATT&CK mapping
 
-Only techniques directly supported by the observed lab activity are included:
+I only mapped activity that was visible in the lab telemetry:
 
 - `T1059.001` — PowerShell
 - `T1059.003` — Windows Command Shell
 - `T1098.007` — Additional Local or Domain Groups
 
-The cross-host login was not treated as proof of malicious lateral movement.
+I did not map a download technique from the text `Invoke-WebRequest`, and I did not map lateral movement from the cross-host logons alone.
 
-## What I learned from tuning
+## Evidence
 
-This project reinforced that an alert is a starting point, not a conclusion. DET-001 showed how a keyword can match without the suspicious behavior actually happening. DET-002 showed that a technically correct alert can still be authorized activity. DET-003 showed how correlation logic can become noisy when identity fields and time windows are too broad.
+The screenshots are collected in [`evidence/README.md`](evidence/README.md). The gallery includes:
 
-The v1 and v2 searches are both kept in the repository so the rule changes are visible instead of only showing the final version.
-
-The full tuning process, including the negative/positive retests and the DET-003 field-extraction debugging, is documented in [`investigations/detection-tuning-report.md`](investigations/detection-tuning-report.md).
+- VirtualBox lab inventory and Splunk host ingestion
+- the Sep 10 PowerShell `4104` marker
+- AD group-membership evidence
+- cross-host `4624` logons and Kerberos correlation
+- Sysmon process/hash evidence and VirusTotal lookup
+- threat-hunt screenshots
+- DET-001 v2 negative and positive retests
+- DET-003 v2 historical validation
+- final enabled/disabled alert state
 
 ## Known limitations
 
-- Sysmon Event ID `3` network-connect telemetry was not enabled during the Sep 10 activity. Network activity therefore could not be conclusively assessed from Sysmon for that incident window.
-- This was a controlled home-lab scenario. No malicious compromise was confirmed.
-- In this lab, Splunk Triggered Alerts entries were retained for only 24 hours. The Sep 10 Triggered Alerts UI entries were no longer available when the final evidence set was collected, so the repository preserves the underlying events, validation results, and final alert configuration instead.
-- The DET-001 v1 and DET-002 v1 SPL files reflect the versions documented in the project conversation; the original Splunk saved-alert exports were not retained separately.
-- The SPL searches were built with guidance and are not presented as independently authored from scratch.
-- Detection logic is lab-specific and would require additional baseline and tuning before production use.
+- Sysmon Event ID `3` network-connect telemetry was not enabled during the Sep 10 activity, so I could not use Sysmon to make a firm conclusion about network activity in that window.
+- This was a controlled home lab, not a production SOC, and no malicious compromise was confirmed.
+- Splunk Triggered Alerts entries were retained for only 24 hours in this lab. The original Sep 10 Triggered Alerts list had expired by the time I built the final evidence set. I kept the underlying events, validation results, and final alert configuration instead.
+- The original Splunk saved-alert exports for DET-001 v1 and DET-002 v1 were not retained separately. The repository versions reflect the versions documented during the project.
+- The SPL was built with guidance while I was learning and should not be read as independently authored from scratch.
+- The detections are lab-specific and would need more baseline data and tuning before production use.
 
 ## Repository structure
 
 ```text
-spl/             Splunk detection searches
-detections/      Detection rule logic, validation, and tuning notes
+spl/             Splunk searches
+detections/      Detection logic, validation, and tuning notes
 configs/         Sanitized Splunk Universal Forwarder input configuration
-investigations/  Analyst investigation reports
-evidence/        Selected screenshots supporting architecture, incident, hunting, and tuning claims
+investigations/  Investigation and tuning reports
+evidence/        Screenshots from architecture, incident, hunting, and tuning work
 ```
