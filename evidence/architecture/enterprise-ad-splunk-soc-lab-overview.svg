@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100" role="img" aria-labelledby="title desc">
+  <title id="title">Enterprise AD + Splunk SOC Lab</title>
+  <desc id="desc">Verified architecture, telemetry flow, Sep 10 controlled incident timeline, process and hash validation, detection tuning, and evidence boundaries.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#071c2d"/>
+      <stop offset="100%" stop-color="#0b2b42"/>
+    </linearGradient>
+    <style>
+      .title{font:700 34px Arial,sans-serif;fill:#f2f8ff}.subtitle{font:700 18px Arial,sans-serif;fill:#c5e7ff}.small{font:14px Arial,sans-serif;fill:#cfe3f2}.paneltitle{font:700 20px Arial,sans-serif;fill:#f2f8ff}.dark{fill:#10263b}.darktext{fill:#10263b}.cardtitle{font:700 18px Arial,sans-serif}.body{font:15px Arial,sans-serif}.tiny{font:13px Arial,sans-serif}.mono{font:12px monospace}.white{fill:#ffffff}.blue{fill:#173d83}.muted{fill:#5b7183}.good{fill:#1b8a57}.accent{fill:#45d4ff}.outline{stroke:#45d4ff;stroke-width:2}.thin{stroke:#8fbfe0;stroke-width:1.5}.arrow{stroke:#2e4a9e;stroke-width:3;fill:none;marker-end:url(#arrow)}
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#2e4a9e"/></marker>
+  </defs>
+
+  <rect width="1600" height="1100" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1600" height="92" fill="#0b2c45"/>
+  <path d="M34 20 L62 12 L90 20 L84 58 L62 78 L40 58 Z" fill="#0d78b8" stroke="#62ddff" stroke-width="2"/>
+  <rect x="58" y="34" width="8" height="20" rx="2" fill="#edf8ff"/><circle cx="62" cy="32" r="7" fill="none" stroke="#edf8ff" stroke-width="3"/>
+  <text x="110" y="38" class="title">Enterprise AD + Splunk SOC Lab</text>
+  <text x="110" y="66" class="subtitle">Architecture, Telemetry Flow and Key Events — Sep 10, 2026</text>
+  <text x="110" y="86" class="small">Active Directory  |  Windows Endpoints  |  Sysmon  |  PowerShell Logging  |  Splunk SIEM  |  Detection &amp; Investigation</text>
+
+  <!-- Top panels -->
+  <rect x="18" y="108" width="1190" height="354" rx="14" fill="#08253a" class="outline"/>
+  <rect x="1222" y="108" width="360" height="354" rx="14" fill="#0b2940" class="outline"/>
+  <text x="34" y="134" class="paneltitle">Lab Environment — VirtualBox Internal Network</text>
+  <text x="1238" y="134" class="paneltitle">Investigation &amp; Validation</text>
+
+  <rect x="34" y="148" width="1158" height="38" rx="9" fill="#0a334d" stroke="#45d4ff"/>
+  <text x="50" y="173" class="small" font-weight="700">SOCLAB internal network</text>
+  <text x="272" y="173" class="small">AD domain: corp.soclab.test</text>
+  <text x="535" y="173" class="small">NetBIOS: CORP</text>
+  <text x="690" y="173" class="small">Splunk index: soc_windows</text>
+  <text x="948" y="173" class="small">Receiving port: TCP 9997</text>
+
+  <!-- DC01 -->
+  <rect x="34" y="202" width="250" height="178" rx="12" fill="#d8f6df" stroke="#45d4ff" stroke-width="2"/>
+  <text x="50" y="228" class="cardtitle darktext">DC01</text><text x="50" y="250" class="body darktext">10.10.10.10</text>
+  <text x="50" y="272" class="body darktext">Windows Server 2022</text><text x="50" y="294" class="body darktext" font-weight="700">AD DS + DNS</text>
+  <text x="50" y="320" class="tiny darktext">• Windows Security logs</text><text x="50" y="342" class="tiny darktext">• Sysmon Operational</text><text x="50" y="364" class="tiny darktext">• PowerShell Operational (4104)</text>
+
+  <!-- WIN1 -->
+  <rect x="300" y="202" width="250" height="178" rx="12" fill="#dceeff" stroke="#45d4ff" stroke-width="2"/>
+  <text x="316" y="228" class="cardtitle darktext">WIN11-01</text><text x="316" y="250" class="body darktext">10.10.10.101</text>
+  <text x="316" y="272" class="body darktext">Windows 11 — domain joined</text>
+  <text x="316" y="306" class="tiny darktext">• Windows Security logs</text><text x="316" y="328" class="tiny darktext">• Sysmon Operational</text><text x="316" y="350" class="tiny darktext">• PowerShell Operational (4104)</text><text x="316" y="372" class="tiny" fill="#165c83" font-weight="700">Splunk Universal Forwarder installed</text>
+
+  <!-- WIN2 -->
+  <rect x="566" y="202" width="250" height="178" rx="12" fill="#dceeff" stroke="#45d4ff" stroke-width="2"/>
+  <text x="582" y="228" class="cardtitle darktext">WIN11-02</text><text x="582" y="250" class="body darktext">10.10.10.102</text>
+  <text x="582" y="272" class="body darktext">Windows 11 — domain joined</text>
+  <text x="582" y="306" class="tiny darktext">• Windows Security logs</text><text x="582" y="328" class="tiny darktext">• Sysmon Operational</text><text x="582" y="350" class="tiny darktext">• PowerShell Operational (4104)</text><text x="582" y="372" class="tiny" fill="#165c83" font-weight="700">Splunk Universal Forwarder installed</text>
+
+  <!-- SPLUNK -->
+  <rect x="832" y="202" width="360" height="178" rx="12" fill="#422d4d" stroke="#ff5fa8" stroke-width="2"/>
+  <text x="850" y="228" class="cardtitle white">SPLUNK01</text><text x="850" y="250" class="body white">10.10.10.20</text>
+  <text x="850" y="272" class="body white">Ubuntu Server — Splunk Enterprise</text>
+  <text x="850" y="306" class="tiny white">• Receives UF data over TCP 9997</text><text x="850" y="328" class="tiny white">• Index: soc_windows</text><text x="850" y="350" class="tiny white">• Search, detection, investigation</text><text x="850" y="372" class="tiny white">• No dashboard claim in this project</text>
+
+  <!-- Flow -->
+  <rect x="100" y="396" width="1010" height="48" rx="10" fill="#0a334d" stroke="#45d4ff"/>
+  <text x="124" y="416" class="small" font-weight="700">Windows hosts → Splunk Universal Forwarder → Security / Application / System / Sysmon / PowerShell</text>
+  <text x="525" y="438" class="small" font-weight="700" fill="#9dffd3">TCP 9997 → SPLUNK01</text>
+  <path d="M160 380 L160 396 M425 380 L425 396 M690 380 L690 396" stroke="#45d4ff" stroke-width="3"/>
+
+  <!-- Right panel -->
+  <text x="1240" y="170" class="small" font-weight="700">Search &amp; Analyze</text><text x="1240" y="190" class="tiny white">SPL queries, raw events, field analysis,</text><text x="1240" y="208" class="tiny white">correlation, host analysis, threat hunting</text>
+  <text x="1240" y="240" class="small" font-weight="700">Timeline &amp; Investigation</text><text x="1240" y="260" class="tiny white">Windows events, Kerberos correlation,</text><text x="1240" y="278" class="tiny white">process context</text>
+  <text x="1240" y="310" class="small" font-weight="700">Final enabled detections</text><text x="1240" y="330" class="tiny white">DET-001 v2  •  DET-002 v1  •  DET-003 v2</text>
+  <text x="1240" y="362" class="small" font-weight="700">Tuning history</text><text x="1240" y="382" class="tiny white">DET-001 v1→v2; DET-003 v1→v2</text><text x="1240" y="400" class="tiny white">DET-002 intentionally stayed at v1</text>
+  <text x="1240" y="432" class="small" font-weight="700">Outcome</text><text x="1240" y="452" class="tiny" fill="#b7ffd1">Controlled lab activity; no malicious compromise confirmed</text>
+
+  <!-- Timeline -->
+  <rect x="18" y="480" width="1564" height="390" rx="14" fill="#eff7fb" stroke="#c7e5f5" stroke-width="2"/>
+  <text x="38" y="514" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#12346f">Sep 10, 2026 — Controlled Incident Timeline (actual lab logs)</text>
+  <text x="1170" y="512" class="tiny blue">Local lab time  |  Splunk index = soc_windows</text>
+
+  <!-- Timeline cards 1-6 -->
+  <g>
+    <rect x="38" y="540" width="205" height="220" rx="11" fill="#e7f3ff" class="thin"/><circle cx="60" cy="562" r="18" fill="#1b63c8"/><text x="55" y="568" class="body white" font-weight="700">1</text><text x="86" y="566" class="tiny blue" font-weight="700">14:07:53.853</text>
+    <text x="54" y="600" class="tiny darktext" font-weight="700">Cached interactive logon</text><text x="54" y="630" class="tiny darktext">WIN11-01</text><text x="54" y="650" class="tiny darktext">Event ID 4624</text><text x="54" y="670" class="tiny darktext">Logon Type 11</text><text x="54" y="690" class="tiny darktext">CachedInteractive</text><text x="54" y="710" class="tiny darktext">User: Mr.Banerjee</text>
+
+    <rect x="258" y="540" width="205" height="220" rx="11" fill="#fff2df" class="thin"/><circle cx="280" cy="562" r="18" fill="#d85815"/><text x="275" y="568" class="body white" font-weight="700">2</text><text x="306" y="558" class="tiny blue" font-weight="700">14:07:57.949</text><text x="306" y="576" class="tiny blue" font-weight="700">14:07:57.955</text>
+    <text x="274" y="610" class="tiny darktext" font-weight="700">Kerberos activity</text><text x="274" y="640" class="tiny darktext">DC01</text><text x="274" y="660" class="tiny darktext">Event IDs 4768 / 4769</text><text x="274" y="680" class="tiny darktext">Associated with WIN11-01</text><text x="274" y="700" class="tiny darktext">Source IP: 10.10.10.101</text>
+
+    <rect x="478" y="540" width="205" height="220" rx="11" fill="#f0e9ff" class="thin"/><circle cx="500" cy="562" r="18" fill="#7d3ad1"/><text x="495" y="568" class="body white" font-weight="700">3</text><text x="526" y="566" class="tiny blue" font-weight="700">14:12:52.019</text>
+    <text x="494" y="600" class="tiny darktext" font-weight="700">PowerShell executed</text><text x="494" y="630" class="tiny darktext">WIN11-01 — Event ID 4104</text><text x="494" y="652" class="tiny darktext">Write-Output &quot;LAB-INC-SEP10</text><text x="494" y="672" class="tiny darktext">Invoke-WebRequest&quot;</text><text x="494" y="702" class="tiny darktext">Text output only — no web request</text>
+
+    <rect x="698" y="540" width="205" height="220" rx="11" fill="#ffe8eb" class="thin"/><circle cx="720" cy="562" r="18" fill="#c52355"/><text x="715" y="568" class="body white" font-weight="700">4</text><text x="746" y="566" class="tiny blue" font-weight="700">14:15:58.619</text>
+    <text x="714" y="600" class="tiny darktext" font-weight="700">User added to group</text><text x="714" y="630" class="tiny darktext">DC01 — Event ID 4728</text><text x="714" y="652" class="tiny darktext">Administrator added</text><text x="714" y="672" class="tiny darktext">Mr.Banerjee → SOC-Analysts</text>
+
+    <rect x="918" y="540" width="205" height="220" rx="11" fill="#e7f3ff" class="thin"/><circle cx="940" cy="562" r="18" fill="#1b63c8"/><text x="935" y="568" class="body white" font-weight="700">5</text><text x="966" y="566" class="tiny blue" font-weight="700">14:17:16.844</text>
+    <text x="934" y="600" class="tiny darktext" font-weight="700">Interactive logon</text><text x="934" y="630" class="tiny darktext">WIN11-02</text><text x="934" y="650" class="tiny darktext">Event ID 4624</text><text x="934" y="670" class="tiny darktext">Logon Type 2 — Interactive</text><text x="934" y="690" class="tiny darktext">User: Mr.Banerjee</text>
+
+    <rect x="1138" y="540" width="205" height="220" rx="11" fill="#fff2df" class="thin"/><circle cx="1160" cy="562" r="18" fill="#d85815"/><text x="1155" y="568" class="body white" font-weight="700">6</text><text x="1186" y="558" class="tiny blue" font-weight="700">14:17:20.236</text><text x="1186" y="576" class="tiny blue" font-weight="700">14:17:20.242</text>
+    <text x="1154" y="610" class="tiny darktext" font-weight="700">Kerberos activity</text><text x="1154" y="640" class="tiny darktext">DC01</text><text x="1154" y="660" class="tiny darktext">Event IDs 4768 / 4769</text><text x="1154" y="680" class="tiny darktext">Associated with WIN11-02</text><text x="1154" y="700" class="tiny darktext">Source IP: 10.10.10.102</text>
+  </g>
+  <path d="M243 650 L258 650 M463 650 L478 650 M683 650 L698 650 M903 650 L918 650 M1123 650 L1138 650" class="arrow"/>
+
+  <!-- cleanup -->
+  <rect x="1358" y="540" width="204" height="220" rx="11" fill="#ddf7ef" stroke="#6bcfb4" stroke-width="2"/>
+  <text x="1374" y="568" class="tiny blue" font-weight="700">Post-Incident Cleanup</text><text x="1374" y="598" class="tiny good" font-weight="700">15:12:42.604</text><text x="1374" y="618" class="tiny darktext">Event ID 4729</text><text x="1374" y="638" class="tiny darktext">Mr.Banerjee removed from</text><text x="1374" y="658" class="tiny darktext">SOC-Analysts on DC01</text><text x="1374" y="694" class="tiny good" font-weight="700">15:13:28.973</text><text x="1374" y="714" class="tiny darktext">Mrs.Banerjee removed as</text><text x="1374" y="734" class="tiny darktext">separate earlier-test cleanup</text>
+
+  <rect x="38" y="778" width="1524" height="72" rx="9" fill="#dcebf5" stroke="#9ecde7"/>
+  <text x="54" y="802" class="tiny darktext" font-weight="700">Analyst interpretation</text>
+  <text x="54" y="824" class="tiny darktext">DET-001 v1: false positive from benign keyword matching.  DET-002: true positive detection condition, but authorized activity.</text>
+  <text x="54" y="844" class="tiny darktext">DET-003: true positive cross-host condition, but benign controlled activity; v1 was noisy. Cross-host authentication was not treated as proof of lateral movement.</text>
+
+  <!-- Separate validation -->
+  <rect x="18" y="888" width="1564" height="156" rx="14" fill="#f1ecff" stroke="#aa8fd6" stroke-width="2"/>
+  <text x="38" y="916" font-family="Arial,sans-serif" font-size="20" font-weight="700" fill="#472087">Separate Validation — Process Execution &amp; Hash Analysis (not part of the main incident sequence)</text>
+  <rect x="38" y="934" width="650" height="92" rx="9" fill="#f9fbff" stroke="#b6cbe3"/>
+  <text x="54" y="958" class="tiny blue" font-weight="700">14:43:36.984 — Sysmon Event ID 1</text><text x="54" y="980" class="tiny darktext">Image: C:\Windows\System32\cmd.exe   |   Host: WIN11-01   |   User: CORP\Mr.Banerjee</text><text x="54" y="1002" class="tiny darktext" font-weight="700">SHA-256:</text><text x="116" y="1002" class="mono darktext">8DD1EBB0B969370C70A5EE7F7EE347949AA7046AA5E1A33FCD7B1E9415B21FC3</text>
+  <rect x="706" y="934" width="420" height="92" rx="9" fill="#f9fbff" stroke="#b6cbe3"/>
+  <text x="722" y="958" class="tiny blue" font-weight="700">VirusTotal lookup</text><text x="722" y="980" class="tiny darktext">0 / 71 security vendors flagged the hash at lookup time.</text><text x="722" y="1002" class="tiny muted">Point-in-time reputation only; not proof of benign activity.</text>
+  <rect x="1144" y="934" width="418" height="92" rx="9" fill="#f9fbff" stroke="#b6cbe3"/>
+  <text x="1160" y="958" class="tiny blue" font-weight="700">Evidence boundary</text><text x="1160" y="980" class="tiny darktext">Separate process/hash validation for investigation practice.</text><text x="1160" y="1002" class="tiny darktext">Not the original 14:12 PowerShell event.</text>
+
+  <!-- Footer -->
+  <rect x="18" y="1058" width="1564" height="28" rx="8" fill="#0a334d" stroke="#45d4ff"/>
+  <text x="34" y="1078" class="tiny white">Evidence boundaries: guided SPL learning; Sysmon Event ID 3 network-connect telemetry was not enabled; DET-001 and DET-003 were tuned; DET-002 stayed at v1; no malicious compromise confirmed.</text>
+</svg>
