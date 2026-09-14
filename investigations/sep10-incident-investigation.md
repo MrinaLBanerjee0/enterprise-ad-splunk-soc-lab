@@ -16,6 +16,25 @@ My final conclusion was that this was authorized controlled lab activity. No mal
 
 The investigation window covered approximately 14:00–15:20 local lab time on Sep 10.
 
+## Visual evidence used in this investigation
+
+The screenshots below are embedded here so the main claims can be reviewed without leaving the report. The [full evidence gallery](../evidence/README.md) documents the boundary of each screenshot.
+
+| PowerShell 4104 | AD group addition 4728 |
+|---|---|
+| ![PowerShell 4104 marker](../evidence/incident/powershell-4104-marker.png) | ![AD group addition 4728](../evidence/incident/ad-group-add-4728.png) |
+| Logged controlled PowerShell marker on `WIN11-01`. | `Administrator` added `Mr.Banerjee` to `SOC-Analysts`. |
+
+| Cross-host authentication | Kerberos correlation |
+|---|---|
+| ![Cross-host authentication](../evidence/incident/cross-host-authentication.png) | ![Kerberos correlation](../evidence/incident/kerberos-correlation.png) |
+| Successful `4624` events for `Mr.Banerjee` on both workstations. | `4768`/`4769` activity associated with both workstation IPs. |
+
+| Sysmon process/hash validation | VirusTotal enrichment |
+|---|---|
+| ![Sysmon cmd hash](../evidence/incident/cmd-hash-splunk.png) | ![VirusTotal hash enrichment](../evidence/incident/cmd-hash-enrichment.png) |
+| Separate validation showing the observed `cmd.exe` SHA-256. | Point-in-time external enrichment showing `0/71` detections. |
+
 ---
 
 ## 2. Alerts Triggered
@@ -248,6 +267,8 @@ The hunt produced one relevant match:
 
 This was the controlled process-tree validation already identified during the investigation.
 
+![PowerShell to cmd.exe threat-hunt evidence](../evidence/threat-hunt/threat-hunt-powershell-cmd.png)
+
 ### Group-membership hunt
 
 I searched for group-membership activity using the relevant security-event IDs (`4728`, `4729`, `4732`, `4733`, `4756`, `4757`).
@@ -259,6 +280,8 @@ The relevant results were the known lab events:
 - `Mrs.Banerjee` removed as separate cleanup from earlier testing
 
 I did not identify an additional unexplained group addition in the investigated window.
+
+![AD group-membership threat-hunt evidence](../evidence/threat-hunt/ad-group-membership-hunt.png)
 
 ### Human-account cross-host hunt
 
